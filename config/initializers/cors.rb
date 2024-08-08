@@ -7,11 +7,12 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "*" # later change to the domain of the frontend app
+    origins "https://dev-exchange-9c70c7f656d7.herokuapp.com" # later change to the domain of the frontend app
 
     resource "*",
       headers: :any,
       methods: [:get, :show, :post, :put, :patch, :delete, :options, :head],
-      expose: ["access-token", "expiry", "token-type", "Authorization"]
+      expose: ["access-token", "expiry", "token-type", "Authorization"],
+      credentials: true # This is important to allow cookies
   end
 end
