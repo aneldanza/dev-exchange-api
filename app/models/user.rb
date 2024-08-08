@@ -6,4 +6,19 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
+
+  def generate_jwt
+    JWT.encode(
+      {
+        jti: self.jti,
+        sub: id,
+        exp: 30.minutes.from_now.to_i,
+      },
+      Rails.application.credentials.devise_jwt_secret_key!
+    )
+  end
+
+  def revoke_token
+    update!(jti: SecureRandom.uuid)
+  end
 end
