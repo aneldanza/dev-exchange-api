@@ -11,9 +11,23 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # end
 
   # POST /resource
-  # def create
-  #   super
-  # end
+  def create
+    build_resource(sign_up_params)
+
+    if resource.save
+      if resource.active_for_authentication?
+        sign_in(resource_name, resource) # Log in the user after registration
+        set_jwt_cookie(resource) # Set the JWT cookie after signing in
+        render json: { message: "Signed up and logged in successfully" }, status: :ok
+      else
+        expire_data_after_sign_in!
+        render json: { message: "Signed up but account not active yet" }, status: :unprocessable_entity
+      end
+    else
+      clean_up_passwords(resource)
+      render json: { message: "Sign up failed", errors: resource.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
 
   # GET /resource/edit
   # def edit
@@ -42,11 +56,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # protected
 
   # If you have extra params to permit, append them to the sanitizer.
-  # def configure_sign_up_params
-  #   devise_parameter_sanitizer.permit(:sign_up, keys: [:attribute])
-  # end
-
-  # If you have extra params to permit, append them to the sanitizer.
   # def configure_account_update_params
   #   devise_parameter_sanitizer.permit(:account_update, keys: [:attribute])
   # end
@@ -63,16 +72,17 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   private
 
-  def respond_with(resource, _opts = {})
-    if resource.persisted?
-      render json: {
-        status: { code: 200, message: "Signed up successfully" },
-        data: UserSerializer.new(resource).serializable_hash[:data][:attributes],
-      }
-    else
-      render json: {
-        status: { message: "User couldn't be created successfully #{resource.errors.full_messages.to_sentence}" },
-      }, status: :unprocessable_entity
-    end
-  end
+  # def respond_with(resource, _opts = {})
+  #   if resource.persisted?
+  #     set_jwt_cookie(resource)
+  #     render json: {
+  #       status: { code: 200, message: "Signed up successfully" },
+  #       data: UserSerializer.new(resource).serializable_hash[:data][:attributes],
+  #     }
+  #   else
+  #     render json: {
+  #       status: { message: "User couldn't be created successfully #{resource.errors.full_messages.to_sentence}" },
+  #     }, status: :unprocessable_entity
+  #   end
+  # end
 end
