@@ -47,10 +47,10 @@ class Users::SessionsController < Devise::SessionsController
     set_jwt_cookie(current_user)
     Rails.logger.debug("is cookie set on cookies.signed[:jwt] - #{cookies.signed[:jwt].present?}")
     render json: {
-      status: {
-        code: 200, message: "User logged in successfully",
-        data: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
-      },
+
+      code: 200, message: "User logged in successfully",
+      data: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
+
     }, status: :ok
   end
 end
