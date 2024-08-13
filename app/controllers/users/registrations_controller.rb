@@ -18,7 +18,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
       if resource.active_for_authentication?
         sign_in(resource_name, resource) # Log in the user after registration
         set_jwt_cookie(resource) # Set the JWT cookie after signing in
-        render json: { message: "Signed up and logged in successfully" }, status: :ok
+        render json: {
+          data: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
+          message: "Signed up and logged in successfully",
+        }, status: :ok
       else
         expire_data_after_sign_in!
         render json: { message: "Signed up but account not active yet" }, status: :unprocessable_entity
