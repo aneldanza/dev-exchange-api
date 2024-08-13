@@ -7,7 +7,7 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins "https://dev-exchange-9c70c7f656d7.herokuapp.com" # later change to the domain of the frontend app
+    origins "http://localhost:5173" # later change to the domain of the frontend app
 
     resource "*",
       headers: :any,
