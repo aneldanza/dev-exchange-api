@@ -3,6 +3,7 @@ class ApplicationController < ActionController::API
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :skip_session_storage, if: :devise_controller?
+  before_action :set_current_user
 
   def set_jwt_cookie(resource)
     token = resource.generate_jwt
@@ -14,6 +15,24 @@ class ApplicationController < ActionController::API
       expires: 30.minutes.from_now, # Match JWT expiration time
       same_site: :none,
     }
+  end
+
+  def set_current_user
+    token = cookies.signed[:jwt]
+    if token.present?
+      begin
+        # Decode the JWT token
+        decoded_token = JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key!, true, algorithm: "HS256")
+        jti = decoded_token.first["jti"]
+
+        # Find the user based on the jti
+        @current_user = User.find_by(jti: jti)
+      rescue
+        Rails.logger.error "JWT decode error: #{e.message}"
+      end
+    else
+      @current_user = nil
+    end
   end
 
   def authorize_user
