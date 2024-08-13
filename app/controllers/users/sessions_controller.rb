@@ -23,7 +23,7 @@ class Users::SessionsController < Devise::SessionsController
   # end
 
   def respond_to_on_destroy
-    authorize_user
+    set_current_user
 
     if @current_user
       cookies.delete(:jwt, secure: true, same_site: :none)
