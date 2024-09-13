@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Users::SessionsController < Devise::SessionsController
+class Auth::SessionsController < Devise::SessionsController
   include ActionController::Cookies
 
   # before_action :configure_sign_in_params, only: [:create]

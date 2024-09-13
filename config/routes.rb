@@ -7,8 +7,8 @@ Rails.application.routes.draw do
                        registration: "signup",
                      },
                      controllers: {
-                       sessions: "users/sessions",
-                       registrations: "users/registrations",
+                       sessions: "auth/sessions",
+                       registrations: "auth/registrations",
                      }
 
   resources :tags, only: %i[index]
