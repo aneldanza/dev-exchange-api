@@ -24,7 +24,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
         }, status: :ok
       else
         expire_data_after_sign_in!
-        render json: { message: "Signed up but account not active yet" }, status: :unprocessable_entity
+        render json: { message: "Account created. Please log in to activate.", errors: ["Signed up but account not active yet"] }, status: :unprocessable_entity
       end
     else
       clean_up_passwords(resource)
