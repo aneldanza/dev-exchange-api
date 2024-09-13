@@ -1,0 +1,22 @@
+class UsersController < ApplicationController
+  def index
+    @users = User.all
+    render json: @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
+  end
+
+  def show
+    @user = User.find(params[:id])
+    # check if current_user is the same as the user being requested
+    if current_user.id == @user.id
+      render json: FullUserSerializer.new(@user).serializable_hash[:data][:attributes], status: 200
+    else
+      render json: { error: "You are not authorized to view this user" }, status: 401
+    end
+  end
+
+  def update
+  end
+
+  def destroy
+  end
+end
