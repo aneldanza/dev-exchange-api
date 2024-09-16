@@ -5,12 +5,12 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.find(params[:id])
+    @user = User.includes(:tags).find(params[:id])
     # check if current_user is the same as the user being requested
-    if current_user.id == @user.id
-      render json: FullUserSerializer.new(@user).serializable_hash[:data][:attributes], status: 200
+    if current_user && current_user.id == @user.id
+      render json: FullUserSerializer.new(@user, include: [:tags]).serializable_hash[:data][:attributes], status: 200
     else
-      render json: { error: "You are not authorized to view this user" }, status: 401
+      render json: { message: "You are not authorized to view this user" }, status: 401
     end
   end
 
