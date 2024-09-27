@@ -18,5 +18,12 @@ class UsersController < ApplicationController
   end
 
   def destroy
+    @user = User.find(params[:id])
+    if current_user && current_user.id == @user.id
+      @user.destroy
+      head :no_content
+    else
+      render json: { error: "Unauthorized" }, status: :unauthorized
+    end
   end
 end
