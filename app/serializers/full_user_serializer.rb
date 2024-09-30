@@ -9,4 +9,8 @@ class FullUserSerializer
   attribute :tags do |object|
     object.tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
   end
+
+  attribute :description do |object|
+    object.description.body.to_s if object.description.present?
+  end
 end
