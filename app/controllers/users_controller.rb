@@ -15,6 +15,13 @@ class UsersController < ApplicationController
   end
 
   def update
+    @user = User.includes(:tags).find(params[:id])
+    if current_user && current_user.id == @user.id
+      @user.update(user_params)
+      render json: FullUserSerializer.new(@user).serializable_hash[:data][:attributes], status: 200
+    else
+      render json: { error: "Unauthorized" }, status: :unauthorized
+    end
   end
 
   def destroy
@@ -26,6 +33,8 @@ class UsersController < ApplicationController
       render json: { error: "Unauthorized" }, status: :unauthorized
     end
   end
+
+  private
 
   def user_params
     params.require(:user).permit(:username, :email, :password, :password_confirmation, :description)
