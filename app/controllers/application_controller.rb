@@ -19,6 +19,7 @@ class ApplicationController < ActionController::API
 
   def set_current_user
     token = cookies.signed[:jwt]
+
     if token.present?
       begin
         # Decode the JWT token

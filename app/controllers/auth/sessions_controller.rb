@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Users::SessionsController < Devise::SessionsController
+class Auth::SessionsController < Devise::SessionsController
   include ActionController::Cookies
 
   # before_action :configure_sign_in_params, only: [:create]
@@ -48,7 +48,7 @@ class Users::SessionsController < Devise::SessionsController
     Rails.logger.debug("is cookie set on cookies.signed[:jwt] - #{cookies.signed[:jwt].present?}")
     render json: {
 
-      code: 200, message: "User logged in successfully",
+      status: 200, message: "User logged in successfully",
       data: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
 
     }, status: :ok
