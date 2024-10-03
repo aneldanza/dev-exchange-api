@@ -10,7 +10,7 @@ class UsersController < ApplicationController
     if current_user && current_user.id == @user.id
       render json: FullUserSerializer.new(@user, include: [:tags]).serializable_hash[:data][:attributes], status: 200
     else
-      render json: UserSerializer.new(@user).serializable_hash[:data][:attributes], status: 200
+      render json: UserSerializer.new(@user, include: [:tags]).serializable_hash[:data][:attributes], status: 200
     end
   end
 
