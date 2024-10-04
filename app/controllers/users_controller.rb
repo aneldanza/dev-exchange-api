@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.includes(:tags).find(params[:id])
+    @user = User.includes(:tags, :questions).find(params[:id])
     # check if current_user is the same as the user being requested
     if current_user && current_user.id == @user.id
       render json: FullUserSerializer.new(@user, include: [:tags]).serializable_hash[:data][:attributes], status: 200
@@ -15,7 +15,7 @@ class UsersController < ApplicationController
   end
 
   def update
-    @user = User.includes(:tags).find(params[:id])
+    @user = User.includes(:tags, :questions).find(params[:id])
     if current_user && current_user.id == @user.id
       @user.update(user_params)
       render json: FullUserSerializer.new(@user).serializable_hash[:data][:attributes], status: 200
