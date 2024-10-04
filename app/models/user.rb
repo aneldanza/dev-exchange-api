@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
 
+  validates_presence_of :email, :username
+
   has_and_belongs_to_many :tags
   has_rich_text :description
 
