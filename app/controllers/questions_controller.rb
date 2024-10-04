@@ -1,9 +1,9 @@
-class QuestionController < ApplicationController
+class QuestionsController < ApplicationController
   before_action :authorize_user, only: [:create, :update, :destroy]
 
   def index
     @questions = Question.all
-    render json: @users.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
+    render json: @questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
   end
 
   def show
