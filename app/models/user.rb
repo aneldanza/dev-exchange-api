@@ -4,6 +4,7 @@ class User < ApplicationRecord
   validates_presence_of :email, :username
 
   has_and_belongs_to_many :tags
+  has_many :questions
   has_rich_text :description
 
   # Include default devise modules. Others available are:
