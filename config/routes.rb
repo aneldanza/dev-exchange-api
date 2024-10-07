@@ -11,7 +11,9 @@ Rails.application.routes.draw do
                        registrations: "auth/registrations",
                      }
 
-  resources :tags, only: %i[index]
+  resources :tags, only: %i[index] do
+    get "search", on: :collection
+  end
   resources :users, only: %i[index show update destroy]
   resources :questions, only: %i[index show create update destroy]
 
