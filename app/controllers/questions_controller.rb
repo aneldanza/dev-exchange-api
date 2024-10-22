@@ -12,11 +12,15 @@ class QuestionsController < ApplicationController
   end
 
   def create
+    tagsData = params[:question].delete(:tags)
+    tags = Tag.where(id: tagsData.map { |tag| tag[:id] })
     @question = Question.new(question_params)
+    @question.tags << tags
+
     if @question.save
       render json: QuestionSerializer.new(@question).serializable_hash[:data][:attributes], status: 201
     else
-      render json: { error: @question.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @question.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
