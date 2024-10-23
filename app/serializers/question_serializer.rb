@@ -10,4 +10,10 @@ class QuestionSerializer
   attribute :tags do |object|
     object.tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
   end
+
+  attribute :user do |object|
+    {
+      username: object.user.username,
+    }
+  end
 end

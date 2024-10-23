@@ -7,7 +7,7 @@ class QuestionsController < ApplicationController
   end
 
   def show
-    @question = Question.includes(:tags).find(params[:id])
+    @question = Question.includes(:user, :tags).find(params[:id])
     render json: QuestionSerializer.new(@question, include: [:tags]).serializable_hash[:data][:attributes], status: 200
   end
 
