@@ -26,8 +26,11 @@ class QuestionsController < ApplicationController
 
   def update
     @question = Question.includes(:tags).find(params[:id])
-    @question.update(question_params)
-    render json: QuestionSerializer.new(@question).serializable_hash[:data][:attributes], status: 200
+    if @question.update(question_params)
+      render json: QuestionSerializer.new(@question).serializable_hash[:data][:attributes], status: 200
+    else
+      render json: { errors: @question.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def destroy
