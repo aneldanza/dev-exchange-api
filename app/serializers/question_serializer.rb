@@ -14,6 +14,7 @@ class QuestionSerializer
   attribute :user do |object|
     {
       username: object.user.username,
+      id: object.user.id,
     }
   end
 end
