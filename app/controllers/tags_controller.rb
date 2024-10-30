@@ -4,6 +4,11 @@ class TagsController < ApplicationController
     render json: @tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
   end
 
+  def show
+    @tag = Tag.includes(:questions).find(params[:id])
+    render json: TagSerializer.new(@tag).serializable_hash[:data][:attributes]
+  end
+
   def create
     @tag = Tag.new(tag_params)
     if @tag.save
