@@ -8,7 +8,7 @@ class QuestionSerializer
   has_many :tags, serializer: TagSerializer
 
   attribute :tags do |object|
-    object.tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
+    object.tags
   end
 
   attribute :user do |object|
