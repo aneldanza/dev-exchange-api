@@ -11,8 +11,11 @@ Rails.application.routes.draw do
                        registrations: "auth/registrations",
                      }
 
-  resources :tags, only: %i[index]
+  resources :tags, only: %i[index create show] do
+    get "search", on: :collection
+  end
   resources :users, only: %i[index show update destroy]
+  resources :questions, only: %i[index show create update destroy]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
