@@ -13,8 +13,8 @@ class QuestionSerializer
 
   attribute :user do |object|
     {
-      username: object.user.username,
-      id: object.user.id,
+      username: object.user ? object.user.username : nil,
+      id: object.user ? object.user.id : nil,
     }
   end
 end
