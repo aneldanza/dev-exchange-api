@@ -20,7 +20,7 @@ class AnswersController < ApplicationController
     if @answer.save
       render json: @answer, status: :created, location: @answer
     else
-      render json: @answer.errors, status: :unprocessable_entity
+      render json: { errors: @answer.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -29,7 +29,7 @@ class AnswersController < ApplicationController
     if @answer.update(answer_params)
       render json: @answer
     else
-      render json: @answer.errors, status: :unprocessable_entity
+      render json: { errors: @answer.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
