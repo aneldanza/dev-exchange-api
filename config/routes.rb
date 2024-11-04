@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   end
   resources :users, only: %i[index show update destroy]
   resources :questions, only: %i[index show create update destroy]
+  resources :answers, only: %i[index create update destroy]
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
