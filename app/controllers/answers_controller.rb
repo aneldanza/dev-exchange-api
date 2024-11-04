@@ -3,14 +3,9 @@ class AnswersController < ApplicationController
 
   # GET /answers
   def index
-    @answers = Answer.all
+    @answers = Answer.all.includes(:user, :question)
 
-    render json: @answers
-  end
-
-  # GET /answers/1
-  def show
-    render json: @answer
+    render json: @answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] }
   end
 
   # POST /answers
@@ -18,7 +13,7 @@ class AnswersController < ApplicationController
     @answer = Answer.new(answer_params)
 
     if @answer.save
-      render json: @answer, status: :created, location: @answer
+      render json: AnswerSerializer.new(@answer).serializable_hash[:data][:attributes], status: :created, location: @answer
     else
       render json: { errors: @answer.errors.full_messages }, status: :unprocessable_entity
     end
@@ -27,7 +22,7 @@ class AnswersController < ApplicationController
   # PATCH/PUT /answers/1
   def update
     if @answer.update(answer_params)
-      render json: @answer
+      render json: AnswerSerializer.new(@answer).serializable_hash[:data][:attributes], status: :ok
     else
       render json: { errors: @answer.errors.full_messages }, status: :unprocessable_entity
     end
