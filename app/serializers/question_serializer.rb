@@ -6,12 +6,17 @@ class QuestionSerializer
   attributes :id, :title, :body, :created_at, :updated_at
 
   has_many :tags, serializer: TagSerializer
+  has_many :answers, serializer: AnswerSerializer
+
+  attribute :answers, if: Proc.new { |record, params| params && params[:detailed] } do |object|
+    object.answers
+  end
 
   attribute :tags do |object|
     object.tags
   end
 
-  attribute :user do |object|
+  attribute :user, if: Proc.new { |record, params| params && params[:detailed] } do |object|
     {
       username: object.user ? object.user.username : nil,
       id: object.user ? object.user.id : nil,
