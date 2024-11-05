@@ -9,7 +9,7 @@ class QuestionSerializer
   has_many :answers, serializer: AnswerSerializer
 
   attribute :answers, if: Proc.new { |record, params| params && params[:detailed] } do |object|
-    object.answers
+    object.answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] }
   end
 
   attribute :tags do |object|
