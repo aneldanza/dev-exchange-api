@@ -3,7 +3,11 @@
 class QuestionSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :title, :body, :created_at, :updated_at
+  attributes :id, :title, :created_at, :updated_at
+
+  attribute :body do |object|
+    object.body.to_trix_html
+  end
 
   has_many :tags, serializer: TagSerializer
   has_many :answers, serializer: AnswerSerializer
