@@ -1,5 +1,5 @@
 class AnswersController < ApplicationController
-  before_action :set_answer, only: [:show, :update, :destroy]
+  before_action :set_answer, only: [:update, :destroy]
 
   # GET /answers
   def index
