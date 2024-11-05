@@ -38,7 +38,7 @@ class QuestionsController < ApplicationController
     if @question.update(question_params)
       user = User.find(@question.user_id)
       updateRecordTags(user, tags)
-      updateRecordTags(@question, tags)
+      @question.tags = tags
       render json: QuestionSerializer.new(@question, { params: { detailed: true } }).serializable_hash[:data][:attributes], status: 200
     else
       render json: { errors: @question.errors.full_messages }, status: :unprocessable_entity
