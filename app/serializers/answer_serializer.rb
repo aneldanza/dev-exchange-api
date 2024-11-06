@@ -13,4 +13,11 @@ class AnswerSerializer
       id: object.user ? object.user.id : nil,
     }
   end
+
+  attribute :question, if: Proc.new { |record, params| params && params[:detailed] } do |object|
+    {
+      title: object.question.title,
+      body: object.question.body.to_trix_html,
+    }
+  end
 end
