@@ -8,6 +8,12 @@ class AnswersController < ApplicationController
     render json: @answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] }
   end
 
+  # GET /answers/:id
+  def show
+    @answer = Answer.includes(:question).find(params[:id])
+    render json: AnswerSerializer.new(@answer, { params: { detailed: true } }).serializable_hash[:data][:attributes], status: :ok
+  end
+
   # POST /answers
   def create
     @answer = Answer.new(answer_params)
@@ -42,6 +48,6 @@ class AnswersController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def answer_params
-    params.require(:answer).permit(:body, :user_id, :question_id)
+    params.require(:answer).permit(:body, :user_id, :question_id, :id)
   end
 end
