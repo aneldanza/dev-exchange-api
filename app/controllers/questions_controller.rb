@@ -7,8 +7,8 @@ class QuestionsController < ApplicationController
   end
 
   def show
-    @question = Question.includes(:user, :tags).find(params[:id])
-    render json: QuestionSerializer.new(@question, include: [:tags]).serializable_hash[:data][:attributes], status: 200
+    @question = Question.includes(:user, :tags, :answers).find(params[:id])
+    render json: QuestionSerializer.new(@question, { params: { detailed: true } }).serializable_hash[:data][:attributes], status: 200
   end
 
   def create
@@ -22,7 +22,7 @@ class QuestionsController < ApplicationController
     if @question.save
       user = User.find(@question.user_id)
       updateRecordTags(user, tags)
-      render json: QuestionSerializer.new(@question).serializable_hash[:data][:attributes], status: 201
+      render json: QuestionSerializer.new(@question, { params: { detailed: true } }).serializable_hash[:data][:attributes], status: 201
     else
       render json: { errors: @question.errors.full_messages }, status: :unprocessable_entity
     end
@@ -38,8 +38,8 @@ class QuestionsController < ApplicationController
     if @question.update(question_params)
       user = User.find(@question.user_id)
       updateRecordTags(user, tags)
-      updateRecordTags(@question, tags)
-      render json: QuestionSerializer.new(@question).serializable_hash[:data][:attributes], status: 200
+      @question.tags = tags
+      render json: QuestionSerializer.new(@question, { params: { detailed: true } }).serializable_hash[:data][:attributes], status: 200
     else
       render json: { errors: @question.errors.full_messages }, status: :unprocessable_entity
     end
