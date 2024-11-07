@@ -9,6 +9,6 @@ class UserSerializer
   end
 
   attribute :description do |object|
-    object.description.body.to_s if object.description.present?
+    object.description.body.to_trix_html if object.description.present?
   end
 end
