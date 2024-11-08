@@ -26,4 +26,8 @@ class QuestionSerializer
       id: object.user ? object.user.id : nil,
     }
   end
+
+  attribute :comments, if: Proc.new { |record, params| params && params[:detailed] } do |object|
+    object.comments.map { |comment| CommentSerializer.new(comment).serializable_hash[:data][:attributes] }
+  end
 end
