@@ -3,6 +3,7 @@ class Question < ApplicationRecord
   belongs_to :user
   has_and_belongs_to_many :tags
   has_many :answers, dependent: :destroy
+  has_many :comments, as: :commentable, dependent: :destroy
 
   validates_presence_of :title, :body
   validates_uniqueness_of :title
