@@ -9,11 +9,11 @@ class QuestionSerializer
     object.body.to_trix_html
   end
 
-  has_many :tags, serializer: TagSerializer
-  has_many :answers, serializer: AnswerSerializer
+  # has_many :tags, serializer: TagSerializer
+  # has_many :answers, serializer: AnswerSerializer
 
-  attribute :answers do |object|
-    if Proc.new { |record, params| params && params[:detailed] }
+  attribute :answers do |object, params|
+    if params && params[:detailed]
       object.answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] }
     else
       object.answers.count
@@ -31,8 +31,8 @@ class QuestionSerializer
     }
   end
 
-  attribute :comments do |object|
-    if Proc.new { |record, params| params && params[:detailed] }
+  attribute :comments do |object, params|
+    if params && params[:detailed]
       object.comments.map { |comment| CommentSerializer.new(comment).serializable_hash[:data][:attributes] }
     else
       object.comments.count
