@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :questions, dependent: :nullify
   has_many :answers, dependent: :nullify
   has_many :comments, dependent: :nullify
+  has_many :votes, dependent: :nullify
 
   has_rich_text :description
 

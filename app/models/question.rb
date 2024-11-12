@@ -4,6 +4,7 @@ class Question < ApplicationRecord
   has_and_belongs_to_many :tags
   has_many :answers, dependent: :destroy
   has_many :comments, as: :commentable, dependent: :destroy
+  has_many :votes, as: :votable, dependent: :destroy
 
   validates_presence_of :title, :body
   validates_uniqueness_of :title
