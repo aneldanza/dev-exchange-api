@@ -18,4 +18,8 @@ class FullUserSerializer
   attribute :questions do |object|
     object.questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
   end
+
+  attribute :votes do |object|
+    object.votes
+  end
 end
