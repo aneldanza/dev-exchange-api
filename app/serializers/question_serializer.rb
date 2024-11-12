@@ -12,22 +12,34 @@ class QuestionSerializer
   has_many :tags, serializer: TagSerializer
   has_many :answers, serializer: AnswerSerializer
 
-  attribute :answers, if: Proc.new { |record, params| params && params[:detailed] } do |object|
-    object.answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] }
+  attribute :answers do |object|
+    if Proc.new { |record, params| params && params[:detailed] }
+      object.answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] }
+    else
+      object.answers.count
+    end
   end
 
   attribute :tags do |object|
     object.tags
   end
 
-  attribute :user, if: Proc.new { |record, params| params && params[:detailed] } do |object|
+  attribute :user do |object|
     {
       username: object.user ? object.user.username : nil,
       id: object.user ? object.user.id : nil,
     }
   end
 
-  attribute :comments, if: Proc.new { |record, params| params && params[:detailed] } do |object|
-    object.comments.map { |comment| CommentSerializer.new(comment).serializable_hash[:data][:attributes] }
+  attribute :comments do |object|
+    if Proc.new { |record, params| params && params[:detailed] }
+      object.comments.map { |comment| CommentSerializer.new(comment).serializable_hash[:data][:attributes] }
+    else
+      object.comments.count
+    end
+  end
+
+  attribute :votes do |object|
+    object.votes.map(&:value).sum
   end
 end
