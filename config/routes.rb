@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   resources :questions, only: %i[index show create update destroy]
   resources :answers, only: %i[index show create update destroy]
   resources :comments, only: %i[show create update destroy]
-  resources :votes, only: %i[create update] do
+  resources :votes do
     post "cast_vote", on: :collection
   end
 
