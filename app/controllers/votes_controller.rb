@@ -13,7 +13,7 @@ class VotesController < ApplicationController
     @vote = @votable.votes.find_or_initialize_by(user_id: current_user.id)
 
     if @vote.value == params[:vote][:value].to_i
-      render json: { errors: ["You have already voted with the same value"] }, status: :conflict
+      render json: { errors: ["You have already #{@vote.value === 1 ? "up" : "down"}voted this #{votable_name.downcase}"] }, status: :conflict
       return
     end
 
