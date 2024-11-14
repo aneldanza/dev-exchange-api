@@ -18,4 +18,12 @@ class FullUserSerializer
   attribute :questions do |object|
     object.questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
   end
+
+  attribute :answers do |object|
+    object.answers.map { |answer| { question_id: answer.question.id, question_title: answer.question.title, tags: answer.question.tags, votes: answer.votes.map(&:value).sum, created_at: answer.created_at } }
+  end
+
+  attribute :votes do |object|
+    object.votes
+  end
 end

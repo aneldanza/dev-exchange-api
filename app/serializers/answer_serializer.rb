@@ -20,4 +20,12 @@ class AnswerSerializer
       body: object.question.body.to_trix_html,
     }
   end
+
+  attribute :comments do |object|
+    object.comments.map { |comment| CommentSerializer.new(comment).serializable_hash[:data][:attributes] }
+  end
+
+  attribute :votes do |object|
+    object.votes.map(&:value).sum
+  end
 end
