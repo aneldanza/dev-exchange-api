@@ -14,6 +14,9 @@ class Tag < ApplicationRecord
                       prefix: true,
                       normalization: 2,
                     },
+                    trigram: {
+                      threshold: 0.1,
+                    },
                   }
 
   private
