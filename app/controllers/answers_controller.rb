@@ -3,14 +3,14 @@ class AnswersController < ApplicationController
 
   # GET /answers
   def index
-    @answers = Answer.all.includes(:user, :question)
+    @answers = Answer.all.includes(:user, :question, :comments)
 
     render json: @answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] }
   end
 
   # GET /answers/:id
   def show
-    @answer = Answer.includes(:question).find(params[:id])
+    @answer = Answer.includes(:user, :question, :comments).find(params[:id])
     render json: AnswerSerializer.new(@answer, { params: { detailed: true } }).serializable_hash[:data][:attributes], status: :ok
   end
 
