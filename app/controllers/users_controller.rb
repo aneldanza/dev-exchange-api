@@ -30,6 +30,37 @@ class UsersController < ApplicationController
     end
   end
 
+  def search_posts
+    if params[:user_id].present? && params[:tag_name].present?
+      user = User.find(params[:user_id])
+      tag_name = params[:tag_name]
+
+      questions = Question.search_by_user_and_tag(user.username, tag_name)
+      answers = Answer.search_by_user_and_tag(user.username, tag_name)
+
+      if params[:sort].present?
+        case params[:sort]
+        when "newest"
+          questions = questions.order(created_at: :desc)
+          answers = answers.order(created_at: :desc)
+        when "oldest"
+          questions = questions.order(created_at: :asc)
+          answers = answers.order(created_at: :asc)
+        when "score"
+          questions = questions.sort_by(&:score).reverse
+          answers = answers.sort_by(&:score).reverse
+        end
+      end
+
+      render json: {
+        questions: questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] },
+        answers: answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] },
+      }
+    else
+      render json: { error: "User ID and tag name are required" }, status: :bad_request
+    end
+  end
+
   private
 
   def user_params
