@@ -14,9 +14,11 @@ Rails.application.routes.draw do
   resources :tags, only: %i[index create show] do
     get "search", on: :collection
   end
+
   resources :users, only: %i[index show update destroy] do
-    get "search_posts", on: :collection
+    get "search_posts"
   end
+
   resources :questions, only: %i[index show create update destroy]
   resources :answers, only: %i[index show create update destroy]
   resources :comments, only: %i[show create update destroy]
