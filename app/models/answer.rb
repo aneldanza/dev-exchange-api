@@ -12,8 +12,7 @@ class Answer < ApplicationRecord
   pg_search_scope :search_by_user_and_tag,
                   associated_against: {
                     user: :username,
-                    question: :title,
-                    tags: :name,
+                    question: [{ tags: :name }],
                   },
                   using: {
                     tsearch: { prefix: true },

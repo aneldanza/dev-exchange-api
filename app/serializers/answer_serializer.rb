@@ -18,6 +18,7 @@ class AnswerSerializer
     {
       title: object.question.title,
       body: object.question.body.to_trix_html,
+      tags: object.question.tags,
     }
   end
 

@@ -19,6 +19,14 @@ class Tag < ApplicationRecord
                     },
                   }
 
+  pg_search_scope :search_by_user,
+                  associated_against: {
+                    users: :id,
+                  },
+                  using: {
+                    tsearch: { prefix: true },
+                  }
+
   private
 
   def downcase_name

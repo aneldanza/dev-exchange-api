@@ -32,30 +32,34 @@ class UsersController < ApplicationController
 
   def search_posts
     if params[:user_id].present? && params[:tag_name].present?
-      user = User.find(params[:user_id])
+      user = User.includes(:answers).find(params[:user_id])
       tag_name = params[:tag_name]
 
-      questions = Question.search_by_user_and_tag(user.username, tag_name)
-      answers = Answer.search_by_user_and_tag(user.username, tag_name)
+      questions = Question.search_by_user_and_tag("#{user.username} #{tag_name}")
+      answers = user.answers.where(question_id: Question.joins(:tags).where(tags: { name: tag_name }).pluck(:id))
+
+      posts = questions + answers
 
       if params[:sort].present?
         case params[:sort]
         when "newest"
-          questions = questions.order(created_at: :desc)
-          answers = answers.order(created_at: :desc)
+          posts = posts.order(created_at: :desc)
+          # answers = answers.order(created_at: :desc)
         when "oldest"
-          questions = questions.order(created_at: :asc)
-          answers = answers.order(created_at: :asc)
+          posts = posts.order(created_at: :asc)
+          # answers = answers.order(created_at: :asc)
         when "score"
-          questions = questions.sort_by(&:score).reverse
-          answers = answers.sort_by(&:score).reverse
+          posts = posts.sort_by(&:score).reverse
+          # answers = answers.sort_by(&:score).reverse
         end
       end
 
-      render json: {
-        questions: questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] },
-        answers: answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] },
-      }
+      render json: posts.map { |post| serialize_post(post) }
+
+      # render json: {
+      #   questions: questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] },
+      #   answers: answers.map { |answer| AnswerSerializer.new(answer).serializable_hash[:data][:attributes] },
+      # }
     else
       render json: { error: "User ID and tag name are required" }, status: :bad_request
     end
@@ -65,5 +69,13 @@ class UsersController < ApplicationController
 
   def user_params
     params.require(:user).permit(:username, :email, :password, :password_confirmation, :description)
+  end
+
+  def serialize_post(post)
+    if post.is_a?(Answer)
+      { type: "answer", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
+    else
+      { type: "question", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
+    end
   end
 end
