@@ -55,18 +55,20 @@ class ApplicationController < ActionController::API
 
   def search_posts
     if params[:query].present?
-      questions = Question.search_by_title_and_body(params[:query])
-      answers = Answer.search_by_body(params[:query])
+      questions = params[:sort].present? ? Question.search_by_title_and_body(params[:query]).order(created_at: :desc) : Question.search_by_title_and_body(params[:query])
+      answers = params[:sort].present? ? Answer.search_by_body(params[:query]).order(created_at: :desc) : Answer.search_by_body(params[:query])
     else
       questions = Question.all
       answers = Answer.all
     end
 
-    posts = (questions + answers).map { |post| serialize_post(post) }
+    posts = sort_posts(questions + answers, params[:sort])
 
-    if params[:sort].present?
-      posts = sort_posts(posts, params[:sort])
-    end
+    # if params[:sort].present?
+    #   posts = sort_posts(posts, params[:sort])
+    # end
+
+    posts = posts.map { |post| serialize_post(post) }
 
     render json: Kaminari.paginate_array(posts).page(params[:page]).per(5)
   end
@@ -82,9 +84,9 @@ class ApplicationController < ActionController::API
   def sort_posts(posts, sort)
     case sort
     when "newest"
-      posts.order(created_at: :desc)
+      posts.sort_by(&:created_at).reverse
     when "oldest"
-      posts.order(created_at: :asc)
+      posts.sort_by(&:created_at)
     when "score"
       posts.sort_by(&:score).reverse
     end
