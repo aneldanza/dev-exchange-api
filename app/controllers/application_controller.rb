@@ -55,18 +55,18 @@ class ApplicationController < ActionController::API
 
   def search_posts
     if params[:query].present?
-      questions = params[:sort].present? ? Question.search_by_title_and_body(params[:query]).order(created_at: :desc) : Question.search_by_title_and_body(params[:query])
-      answers = params[:sort].present? ? Answer.search_by_body(params[:query]).order(created_at: :desc) : Answer.search_by_body(params[:query])
+      questions = Question.search_by_title_and_body(params[:query])
+      answers = Answer.search_by_body(params[:query])
     else
       questions = Question.all
       answers = Answer.all
     end
 
-    posts = sort_posts(questions + answers, params[:sort])
+    posts = questions + answers
 
-    # if params[:sort].present?
-    #   posts = sort_posts(posts, params[:sort])
-    # end
+    if params[:sort].present?
+      posts = sort_posts(posts, params[:sort])
+    end
 
     posts = posts.map { |post| serialize_post(post) }
 
