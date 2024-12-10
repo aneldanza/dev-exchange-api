@@ -48,3 +48,5 @@ end
 gem "devise"
 gem "devise-jwt"
 gem "jsonapi-serializer"
+gem "pg_search"
+gem "kaminari"

@@ -42,31 +42,6 @@ class ApplicationController < ActionController::API
     if !logged_in?
       render json: { error: "Unauthorized" }, status: :unauthorized
     end
-
-    # Extract the JWT token from the cookies
-    # token = cookies.signed[:jwt]
-
-    # if token.present?
-    #   begin
-    #     # Decode the JWT token
-    #     decoded_token = JWT.decode(token, Rails.application.credentials.devise_jwt_secret_key!, true, algorithm: "HS256")
-    #     jti = decoded_token.first["jti"]
-
-    #     # Find the user based on the jti
-    #     @current_user = User.find_by(jti: jti)
-    #     Rails.logger.debug("*** curent user in authorize_user is: #{@current_user.jti}")
-
-    #     # Handle case where user is not found
-    #     if @current_user.nil?
-    #       render json: { error: "Unauthorized" }, status: :unauthorized
-    #     end
-    #   rescue JWT::DecodeError => e
-    #     Rails.logger.error "JWT decode error: #{e.message}"
-    #     render json: { error: "Unauthorized" }, status: :unauthorized
-    #   end
-    # else
-    #   render json: { error: "No token provided" }, status: :unauthorized
-    # end
   end
 
   def configure_permitted_parameters
@@ -76,6 +51,45 @@ class ApplicationController < ActionController::API
 
   def logged_in?
     !!@current_user
+  end
+
+  def search_posts
+    if params[:query].present?
+      questions = Question.search_by_title_and_body(params[:query])
+      answers = Answer.search_by_body(params[:query])
+    else
+      questions = Question.all
+      answers = Answer.all
+    end
+
+    posts = questions + answers
+
+    if params[:sort].present?
+      posts = sort_posts(posts, params[:sort])
+    end
+
+    posts = posts.map { |post| serialize_post(post) }
+
+    render json: Kaminari.paginate_array(posts).page(params[:page]).per(5)
+  end
+
+  def serialize_post(post)
+    if post.is_a?(Answer)
+      { type: "answer", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
+    else
+      { type: "question", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
+    end
+  end
+
+  def sort_posts(posts, sort)
+    case sort
+    when "newest"
+      posts.sort_by(&:created_at).reverse
+    when "oldest"
+      posts.sort_by(&:created_at)
+    when "score"
+      posts.sort_by(&:score).reverse
+    end
   end
 
   private

@@ -20,7 +20,7 @@ class FullUserSerializer
   end
 
   attribute :answers do |object|
-    object.answers.map { |answer| { question_id: answer.question.id, question_title: answer.question.title, tags: answer.question.tags, votes: answer.votes.map(&:value).sum, created_at: answer.created_at } }
+    object.answers.map { |answer| PostSerializer.new(answer).serializable_hash[:data][:attributes] }
   end
 
   attribute :votes do |object|
