@@ -22,7 +22,10 @@ class Question < ApplicationRecord
                   }
 
   pg_search_scope :search_by_title_and_body,
-                  against: %i[title body],
+                  against: %i[title],
+                  associated_against: {
+                    rich_text_body: :body,
+                  },
                   using: {
                     tsearch: { prefix: true },
                   }
