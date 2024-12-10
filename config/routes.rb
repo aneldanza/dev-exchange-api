@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get "/current_user", to: "current_user#index"
+  get "/search_posts/page/:page", to: "application#search_posts"
 
   devise_for :users, path: "", path_names: {
                        sign_in: "login",
@@ -14,7 +15,11 @@ Rails.application.routes.draw do
   resources :tags, only: %i[index create show] do
     get "search", on: :collection
   end
-  resources :users, only: %i[index show update destroy]
+
+  resources :users, only: %i[index show update destroy] do
+    get "search_posts"
+  end
+
   resources :questions, only: %i[index show create update destroy]
   resources :answers, only: %i[index show create update destroy]
   resources :comments, only: %i[show create update destroy]

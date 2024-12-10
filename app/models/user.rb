@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   include Devise::JWT::RevocationStrategies::JTIMatcher
+  include PgSearch::Model
 
   validates_presence_of :email, :username
 
