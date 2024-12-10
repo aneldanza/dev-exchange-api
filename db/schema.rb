@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_14_201557) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_10_232034) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -74,6 +74,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_14_201557) do
     t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
+  create_table "posts", force: :cascade do |t|
+    t.string "title"
+    t.text "body"
+    t.string "type"
+    t.bigint "user_id"
+    t.bigint "question_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_posts_on_user_id"
+  end
+
   create_table "questions", force: :cascade do |t|
     t.string "title"
     t.text "body"
@@ -135,6 +146,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_14_201557) do
   add_foreign_key "answers", "questions"
   add_foreign_key "answers", "users"
   add_foreign_key "comments", "users"
+  add_foreign_key "posts", "users"
   add_foreign_key "questions", "users"
   add_foreign_key "tags_users", "tags", on_delete: :cascade
   add_foreign_key "tags_users", "users", on_delete: :cascade
