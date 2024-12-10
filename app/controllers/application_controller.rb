@@ -61,6 +61,14 @@ class ApplicationController < ActionController::API
       questions = Question.all
       answers = Answer.all
     end
+
+    posts = (questions + answers).map { |post| serialize_post(post) }
+
+    if params[:sort].present?
+      posts = sort_posts(posts, params[:sort])
+    end
+
+    render json: Kaminari.paginate_array(posts).page(params[:page]).per(5)
   end
 
   def serialize_post(post)
