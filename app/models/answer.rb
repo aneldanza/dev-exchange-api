@@ -18,6 +18,12 @@ class Answer < ApplicationRecord
                     tsearch: { prefix: true },
                   }
 
+  pg_search_scope :search_by_body,
+                  against: :body,
+                  using: {
+                    tsearch: { prefix: true },
+                  }
+
   def score
     votes.sum(:value)
   end

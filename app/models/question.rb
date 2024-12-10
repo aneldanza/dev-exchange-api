@@ -21,6 +21,12 @@ class Question < ApplicationRecord
                     tsearch: { prefix: true },
                   }
 
+  pg_search_scope :search_by_title_and_body,
+                  against: %i[title body],
+                  using: {
+                    tsearch: { prefix: true },
+                  }
+
   def score
     votes.sum(:value)
   end
