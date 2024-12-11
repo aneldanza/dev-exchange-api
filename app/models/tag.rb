@@ -2,7 +2,7 @@ class Tag < ApplicationRecord
   include PgSearch::Model
 
   has_and_belongs_to_many :users
-  has_and_belongs_to_many :questions
+  has_and_belongs_to_many :posts
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
   before_validation :downcase_name
