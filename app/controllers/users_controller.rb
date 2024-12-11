@@ -1,11 +1,13 @@
 class UsersController < ApplicationController
   def index
     @users = User.all
+
     render json: @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
   end
 
   def show
     @user = User.includes(:tags, :questions).find(params[:id])
+
     # check if current_user is the same as the user being requested
     render json: FullUserSerializer.new(@user, include: [:tags]).serializable_hash[:data][:attributes], status: 200
   end
