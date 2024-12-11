@@ -1,7 +1,6 @@
 class Post < ApplicationRecord
   belongs_to :user
   belongs_to :question, optional: true
-  belongs_to :answer, optional: true
   has_many :comments, as: :commentable, dependent: :destroy
   has_many :votes, as: :votable, dependent: :destroy
   has_and_belongs_to_many :tags
