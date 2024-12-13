@@ -19,6 +19,16 @@ class Post < ApplicationRecord
                     tsearch: { prefix: true },
                   }
 
+  pg_search_scope :search_by_user_and_tag,
+                  associated_against: {
+                    user: :username,
+                    tags: :name,
+                    rich_text_body: [:body],
+                  },
+                  using: {
+                    tsearch: { prefix: true },
+                  }
+
   def question?
     type == "Question"
   end
