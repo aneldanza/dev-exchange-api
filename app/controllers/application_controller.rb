@@ -68,17 +68,9 @@ class ApplicationController < ActionController::API
       posts = sort_posts(posts, params[:sort])
     end
 
-    posts = posts.map { |post| serialize_post(post) }
+    posts = posts.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] }
 
     render json: Kaminari.paginate_array(posts).page(params[:page]).per(5)
-  end
-
-  def serialize_post(post)
-    if post.is_a?(Answer)
-      { type: "answer", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
-    else
-      { type: "question", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
-    end
   end
 
   def sort_posts(posts, sort)
