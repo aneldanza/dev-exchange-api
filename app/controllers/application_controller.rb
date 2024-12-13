@@ -55,14 +55,10 @@ class ApplicationController < ActionController::API
 
   def search_posts
     if params[:query].present?
-      questions = Question.search_by_title_and_body(params[:query])
-      answers = Answer.search_by_body(params[:query])
+      posts = Post.search_by_title_and_body(params[:query])
     else
-      questions = Question.all
-      answers = Answer.all
+      posts = Post.all
     end
-
-    posts = questions + answers
 
     if params[:sort].present?
       posts = sort_posts(posts, params[:sort])
@@ -70,7 +66,14 @@ class ApplicationController < ActionController::API
 
     posts = posts.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] }
 
-    render json: Kaminari.paginate_array(posts).page(params[:page]).per(5)
+    page_size = params[:limit].present? ? params[:limit].to_i : 1
+
+    paginated_posts = Kaminari.paginate_array(posts).page(params[:page].to_i).per(page_size)
+
+    render json: {
+      posts: paginated_posts,
+      total_pages: paginated_posts.total_pages,
+    }
   end
 
   def sort_posts(posts, sort)
