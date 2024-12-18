@@ -60,7 +60,7 @@ class ApplicationController < ActionController::API
       posts = Post.all
     end
 
-    if params[:sort].present?
+    if params[:sort].present? && %w[newest oldest score].include?(params[:sort])
       posts = sort_posts(posts, params[:sort])
     end
 
@@ -73,6 +73,12 @@ class ApplicationController < ActionController::API
     render json: {
       posts: paginated_posts,
       total_pages: paginated_posts.total_pages,
+      current_page: paginated_posts.current_page,
+      total_results: posts.count,
+      next_page: paginated_posts.next_page,
+      prev_page: paginated_posts.prev_page,
+      first_page: paginated_posts.first_page?,
+      last_page: paginated_posts.last_page?,
     }
   end
 
