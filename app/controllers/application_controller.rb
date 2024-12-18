@@ -67,8 +67,9 @@ class ApplicationController < ActionController::API
     posts = posts.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] }
 
     page_size = params[:limit].present? ? params[:limit].to_i : 1
+    page_number = params[:page].present? ? params[:page].to_i : 1
 
-    paginated_posts = Kaminari.paginate_array(posts).page(params[:page].to_i).per(page_size)
+    paginated_posts = Kaminari.paginate_array(posts).page(page_number).per(page_size)
 
     render json: {
       posts: paginated_posts,

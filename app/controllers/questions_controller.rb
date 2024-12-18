@@ -2,8 +2,29 @@ class QuestionsController < ApplicationController
   before_action :authorize_user, only: [:create, :update, :destroy]
 
   def index
-    @questions = Question.all
-    render json: @questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
+    questions = Question.all
+
+    page_number = params[:page].present? ? params[:page].to_i : 1
+    page_size = params[:limit].present? && params[:limit].to_i > 0 ? params[:limit].to_i : 10
+
+    if params[:sort].present? && %w[newest oldest score].include?(params[:sort])
+      questions = sort_posts(questions, params[:sort])
+    end
+
+    questions = questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
+
+    paginated_questions = Kaminari.paginate_array(questions).page(page_number).per(page_size)
+
+    render json: {
+      questions: paginated_questions,
+      total_pages: paginated_questions.total_pages,
+      current_page: paginated_questions.current_page,
+      total_results: questions.count,
+      next_page: paginated_questions.next_page,
+      prev_page: paginated_questions.prev_page,
+      first_page: paginated_questions.first_page?,
+      last_page: paginated_questions.last_page?,
+    }
   end
 
   def show
