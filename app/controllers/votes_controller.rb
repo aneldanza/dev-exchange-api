@@ -17,7 +17,7 @@ class VotesController < ApplicationController
       return
     end
 
-    @vote.value = @vote.value + params[:vote][:value]
+    @vote.value = (@vote.value || 0) + params[:vote][:value].to_i
 
     if @vote.save
       render json: { message: "Vote successfully cast", vote: @vote }, status: :ok
