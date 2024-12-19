@@ -16,7 +16,7 @@ class FullUserSerializer
   end
 
   attribute :questions do |object|
-    object.questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
+    object.questions.map { |question| PostSerializer.new(question).serializable_hash[:data][:attributes] }
   end
 
   attribute :answers do |object|
