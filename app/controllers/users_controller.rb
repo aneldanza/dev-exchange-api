@@ -1,11 +1,13 @@
 class UsersController < ApplicationController
   def index
     @users = User.all
+
     render json: @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
   end
 
   def show
     @user = User.includes(:tags, :questions).find(params[:id])
+
     # check if current_user is the same as the user being requested
     render json: FullUserSerializer.new(@user, include: [:tags]).serializable_hash[:data][:attributes], status: 200
   end
@@ -35,16 +37,13 @@ class UsersController < ApplicationController
       user = User.includes(:answers).find(params[:user_id])
       tag_name = params[:tag_name]
 
-      questions = Question.search_by_user_and_tag("#{user.username} #{tag_name}")
-      answers = user.answers.where(question_id: Question.joins(:tags).where(tags: { name: tag_name }).pluck(:id))
-
-      posts = questions + answers
+      posts = Post.search_by_user_and_tag("#{user.username} #{tag_name}")
 
       if params[:sort].present?
         posts = sort_posts(posts, params[:sort])
       end
 
-      render json: posts.map { |post| serialize_post(post) }
+      render json: posts.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] }
     else
       render json: { error: "User ID and tag name are required" }, status: :bad_request
     end

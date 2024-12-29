@@ -5,7 +5,7 @@ class TagsController < ApplicationController
   end
 
   def show
-    @tag = Tag.includes(:questions).find(params[:id])
+    @tag = Tag.includes(:posts).find(params[:id])
     render json: TagSerializer.new(@tag).serializable_hash[:data][:attributes]
   end
 

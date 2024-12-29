@@ -55,30 +55,32 @@ class ApplicationController < ActionController::API
 
   def search_posts
     if params[:query].present?
-      questions = Question.search_by_title_and_body(params[:query])
-      answers = Answer.search_by_body(params[:query])
+      posts = Post.search_by_title_and_body(params[:query])
     else
-      questions = Question.all
-      answers = Answer.all
+      posts = Post.all
     end
 
-    posts = questions + answers
-
-    if params[:sort].present?
+    if params[:sort].present? && %w[newest oldest score].include?(params[:sort])
       posts = sort_posts(posts, params[:sort])
     end
 
-    posts = posts.map { |post| serialize_post(post) }
+    posts = posts.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] }
 
-    render json: Kaminari.paginate_array(posts).page(params[:page]).per(5)
-  end
+    page_size = params[:limit].present? ? params[:limit].to_i : 1
+    page_number = params[:page].present? ? params[:page].to_i : 1
 
-  def serialize_post(post)
-    if post.is_a?(Answer)
-      { type: "answer", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
-    else
-      { type: "question", post: PostSerializer.new(post).serializable_hash[:data][:attributes] }
-    end
+    paginated_posts = Kaminari.paginate_array(posts).page(page_number).per(page_size)
+
+    render json: {
+      posts: paginated_posts,
+      total_pages: paginated_posts.total_pages,
+      current_page: paginated_posts.current_page,
+      total_results: posts.count,
+      next_page: paginated_posts.next_page,
+      prev_page: paginated_posts.prev_page,
+      first_page: paginated_posts.first_page?,
+      last_page: paginated_posts.last_page?,
+    }
   end
 
   def sort_posts(posts, sort)

@@ -5,10 +5,13 @@ class User < ApplicationRecord
   validates_presence_of :email, :username
 
   has_and_belongs_to_many :tags
-  has_many :questions, dependent: :nullify
-  has_many :answers, dependent: :nullify
+  has_many :posts, dependent: :nullify
   has_many :comments, dependent: :nullify
   has_many :votes, dependent: :nullify
+
+  # Scopes to differentiate between questions and answers
+  has_many :questions, -> { where(type: "Question") }, class_name: "Post"
+  has_many :answers, -> { where(type: "Answer") }, class_name: "Post"
 
   has_rich_text :description
 

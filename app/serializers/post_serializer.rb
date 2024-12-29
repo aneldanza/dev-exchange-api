@@ -1,26 +1,10 @@
 class PostSerializer
   include JSONAPI::Serializer
 
-  attributes :created_at, :updated_at, :user_id
+  attributes :created_at, :updated_at, :id, :question_id, :type
 
   attribute :body do |object|
     object.body.to_trix_html
-  end
-
-  attribute :id do |object|
-    if object.is_a?(Question)
-      nil
-    elsif object.is_a?(Answer)
-      object.id
-    end
-  end
-
-  attribute :question_id do |object|
-    if object.is_a?(Question)
-      object.id
-    elsif object.is_a?(Answer)
-      object.question.id
-    end
   end
 
   attribute :title do |object|

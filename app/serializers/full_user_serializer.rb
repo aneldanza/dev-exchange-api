@@ -11,12 +11,21 @@ class FullUserSerializer
     object.tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
   end
 
+  attribute :posts_by_tag do |object|
+    object.tags.map do |tag|
+      {
+        tag: tag,
+        posts: object.posts.filter { |post| post.tags.include?(tag) }.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] },
+      }
+    end
+  end
+
   attribute :description do |object|
     object.description.body.to_s if object.description.present?
   end
 
   attribute :questions do |object|
-    object.questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
+    object.questions.map { |question| PostSerializer.new(question).serializable_hash[:data][:attributes] }
   end
 
   attribute :answers do |object|
