@@ -49,6 +49,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def search_users
+    if params[:name].present?
+      users = User.search_by_name(params[:name])
+
+      render json: users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
+    else
+      index
+    end
+  end
+
   private
 
   def user_params
