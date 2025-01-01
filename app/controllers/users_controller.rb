@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   def index
-    @users = User.all
+    serialized_users = @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
 
-    render json: @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
+    render json: paginate_records(serialized_users, params[:page], params[:limit], "users")
   end
 
   def show
@@ -50,13 +50,13 @@ class UsersController < ApplicationController
   end
 
   def search_users
-    if params[:name].present?
-      users = User.search_by_name(params[:name])
-
-      render json: users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
+    if params[:value].present?
+      @users = User.search_by_name(params[:value])
     else
-      index
+      @users = User.all
     end
+
+    index
   end
 
   private
