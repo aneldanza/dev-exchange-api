@@ -94,6 +94,23 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def paginate_records(records, page, per_page, name)
+    page_number = page ? page.to_i : 1
+    page_size = per_page.present? && per_page.to_i > 0 ? per_page.to_i : 10
+    paginate_records = Kaminari.paginate_array(records).page(page_number).per(page_size)
+
+    return {
+             name => paginate_records,
+             total_pages: paginate_records.total_pages,
+             current_page: paginate_records.current_page,
+             total_results: records.count,
+             next_page: paginate_records.next_page,
+             prev_page: paginate_records.prev_page,
+             first_page: paginate_records.first_page?,
+             last_page: paginate_records.last_page?,
+           }
+  end
+
   private
 
   def skip_session_storage
