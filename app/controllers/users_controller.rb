@@ -34,11 +34,9 @@ class UsersController < ApplicationController
 
   def search_posts
     if params[:user_id].present? && params[:tag_name].present?
-      user = User.includes(:answers).find(params[:user_id])
-      tag_name = params[:tag_name]
-
-      posts = Post.search_by_user_and_tag("#{user.username} #{tag_name}")
-
+      user = User.find(params[:user_id])
+      tag = Tag.find_by(name: params[:tag_name])
+      posts = user.posts.filter { |post| post.tags.include?(tag) }
       if params[:sort].present?
         posts = sort_posts(posts, params[:sort])
       end

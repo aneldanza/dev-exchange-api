@@ -11,13 +11,13 @@ class FullUserSerializer
     object.tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
   end
 
-  attribute :posts_by_tag do |object|
-    object.tags.map do |tag|
+  attribute :posts_by_tag do |user|
+    user.tags.map do |tag|
       {
         tag: tag,
-        posts: object.posts.filter { |post| post.tags.include?(tag) }.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] },
+        posts: user.posts.filter { |post| post.tags.include?(tag) }.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] },
       }
-    end.sort_by { |tag_posts| -tag_posts[:posts].size }
+    end.sort_by { |tag_posts| -tag_posts[:posts].length }
   end
 
   attribute :description do |object|
