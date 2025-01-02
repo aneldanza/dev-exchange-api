@@ -17,7 +17,7 @@ class FullUserSerializer
         tag: tag,
         posts: object.posts.filter { |post| post.tags.include?(tag) }.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] },
       }
-    end
+    end.sort_by { |tag_posts| -tag_posts[:posts].size }
   end
 
   attribute :description do |object|
