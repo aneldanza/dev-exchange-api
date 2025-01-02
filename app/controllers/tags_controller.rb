@@ -1,12 +1,13 @@
 class TagsController < ApplicationController
   def index
-    @tags = Tag.all
-    render json: @tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
+    serialized_tags = @tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
+
+    render json: paginate_records(serialized_tags, params[:page], params[:limit], "tags")
   end
 
   def show
     @tag = Tag.includes(:posts).find(params[:id])
-    render json: TagSerializer.new(@tag).serializable_hash[:data][:attributes]
+    render json: TagSerializer.new(@tag, { params: { detailed: true } }).serializable_hash[:data][:attributes]
   end
 
   def create
@@ -19,8 +20,13 @@ class TagsController < ApplicationController
   end
 
   def search
-    @tags = Tag.search_by_name(params[:name]).limit(5)
-    render json: @tags.map { |tag| TagSerializer.new(tag).serializable_hash[:data][:attributes] }
+    if params[:name].present?
+      @tags = Tag.search_by_name(params[:name])
+    else
+      @tags = Tag.all
+    end
+
+    index
   end
 
   private
