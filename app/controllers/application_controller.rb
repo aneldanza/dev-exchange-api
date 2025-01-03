@@ -44,6 +44,10 @@ class ApplicationController < ActionController::API
     end
   end
 
+  def author?(author_id)
+    @current_user && @current_user.id == author_id
+  end
+
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:sign_up, keys: %i[username])
     devise_parameter_sanitizer.permit(:account_update, keys: %i[username])
