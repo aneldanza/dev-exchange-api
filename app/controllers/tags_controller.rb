@@ -23,7 +23,7 @@ class TagsController < ApplicationController
     if params[:name].present?
       @tags = Tag.search_by_name(params[:name])
     else
-      @tags = Tag.all
+      @tags = Tag.left_joins(:posts).group(:id).order("COUNT(posts.id) DESC")
     end
 
     index
