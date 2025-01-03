@@ -15,6 +15,11 @@ class CommentsController < ApplicationController
   end
 
   def update
+    if !author?(@comment.user_id)
+      render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
+
     if @comment.update(comment_params)
       render json: CommentSerializer.new(@comment).serializable_hash[:data][:attributes], status: :ok
     else
@@ -23,6 +28,10 @@ class CommentsController < ApplicationController
   end
 
   def destroy
+    if !author?(@comment.user_id)
+      render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
     @comment.destroy
   end
 
