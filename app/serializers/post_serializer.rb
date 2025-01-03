@@ -15,6 +15,10 @@ class PostSerializer
     end
   end
 
+  attribute :accepted do |object|
+    object.accepted.nil? ? nil : object.accepted
+  end
+
   attribute :tags do |object|
     if object.is_a?(Question)
       object.tags

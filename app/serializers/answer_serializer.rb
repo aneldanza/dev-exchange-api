@@ -1,7 +1,7 @@
 class AnswerSerializer
   include JSONAPI::Serializer
 
-  attributes :id, :created_at, :updated_at, :question_id
+  attributes :id, :created_at, :updated_at, :question_id, :accepted
 
   attribute :body do |object|
     object.body.to_trix_html
