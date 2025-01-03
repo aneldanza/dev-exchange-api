@@ -16,7 +16,9 @@ class PostSerializer
   end
 
   attribute :accepted do |object|
-    object.accepted.nil? ? nil : object.accepted
+    if object.is_a?(Answer)
+      object.accepted
+    end
   end
 
   attribute :tags do |object|
@@ -29,9 +31,10 @@ class PostSerializer
 
   attribute :answers do |object|
     if object.is_a?(Question)
-      object.answers.count
-    elsif object.is_a?(Answer)
-      nil
+      {
+        count: object.answers.count,
+        accepted: object.answers.any?(&:accepted),
+      }
     end
   end
 
