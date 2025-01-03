@@ -37,6 +37,11 @@ class QuestionsController < ApplicationController
 
   def update
     @question = Question.includes(:tags).find(params[:id])
+    if !author?(@question.user_id)
+      render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
+
     tagsData = params[:question].delete(:tags)
     tags = tagsData.map do |tag|
       findOrCreateTag(tag)
@@ -54,6 +59,10 @@ class QuestionsController < ApplicationController
 
   def destroy
     @question = Question.find(params[:id])
+    if !author?(@question.user_id)
+      render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
     @question.destroy
     head :no_content
   end
