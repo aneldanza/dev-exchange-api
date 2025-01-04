@@ -8,7 +8,7 @@ class QuestionsController < ApplicationController
       questions = sort_posts(questions, params[:sort])
     end
 
-    questions = questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
+    questions = questions.map { |question| PostSerializer.new(question).serializable_hash[:data][:attributes] }
 
     render json: paginate_records(questions, params[:page], params[:limit], "questions")
   end
