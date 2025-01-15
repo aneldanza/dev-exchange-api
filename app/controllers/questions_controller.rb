@@ -4,27 +4,13 @@ class QuestionsController < ApplicationController
   def index
     questions = Question.all
 
-    page_number = params[:page].present? ? params[:page].to_i : 1
-    page_size = params[:limit].present? && params[:limit].to_i > 0 ? params[:limit].to_i : 10
-
     if params[:sort].present? && %w[newest oldest score].include?(params[:sort])
       questions = sort_posts(questions, params[:sort])
     end
 
-    questions = questions.map { |question| QuestionSerializer.new(question).serializable_hash[:data][:attributes] }
+    questions = questions.map { |question| PostSerializer.new(question).serializable_hash[:data][:attributes] }
 
-    paginated_questions = Kaminari.paginate_array(questions).page(page_number).per(page_size)
-
-    render json: {
-      questions: paginated_questions,
-      total_pages: paginated_questions.total_pages,
-      current_page: paginated_questions.current_page,
-      total_results: questions.count,
-      next_page: paginated_questions.next_page,
-      prev_page: paginated_questions.prev_page,
-      first_page: paginated_questions.first_page?,
-      last_page: paginated_questions.last_page?,
-    }
+    render json: paginate_records(questions, params[:page], params[:limit], "questions")
   end
 
   def show
@@ -51,6 +37,11 @@ class QuestionsController < ApplicationController
 
   def update
     @question = Question.includes(:tags).find(params[:id])
+    if !author?(@question.user_id)
+      render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
+
     tagsData = params[:question].delete(:tags)
     tags = tagsData.map do |tag|
       findOrCreateTag(tag)
@@ -68,6 +59,10 @@ class QuestionsController < ApplicationController
 
   def destroy
     @question = Question.find(params[:id])
+    if !author?(@question.user_id)
+      render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
     @question.destroy
     head :no_content
   end

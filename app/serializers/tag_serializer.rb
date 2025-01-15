@@ -4,7 +4,11 @@ class TagSerializer
 
   attributes :id, :name, :description, :created_at
 
-  attribute :questions do |object|
-    object.posts.map { |post| QuestionSerializer.new(post).serializable_hash[:data][:attributes] }
+  attribute :questions do |object, params|
+    if params && params[:detailed]
+      object.posts.map { |post| QuestionSerializer.new(post).serializable_hash[:data][:attributes] }
+    else
+      object.posts.map { |post| { id: post.id } }
+    end
   end
 end
