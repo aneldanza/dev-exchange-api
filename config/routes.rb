@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
   resources :users, only: %i[index show update destroy] do
     get "search_posts"
+    get "search_users", on: :collection
   end
 
   resources :questions, only: %i[index show create update destroy]

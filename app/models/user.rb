@@ -21,6 +21,15 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :jwt_authenticatable, jwt_revocation_strategy: self
 
+  include PgSearch::Model
+
+  pg_search_scope :search_by_name,
+                  against: %i[username],
+                  using: {
+                    tsearch: { prefix: true, any_word: true },
+                    trigram: { threshold: 0.1 },
+                  }
+
   def generate_jwt
     JWT.encode(
       {

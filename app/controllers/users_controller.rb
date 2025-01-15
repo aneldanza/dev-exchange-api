@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   def index
-    @users = User.all
+    serialized_users = @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
 
-    render json: @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
+    render json: paginate_records(serialized_users, params[:page], params[:limit], "users")
   end
 
   def show
@@ -34,11 +34,9 @@ class UsersController < ApplicationController
 
   def search_posts
     if params[:user_id].present? && params[:tag_name].present?
-      user = User.includes(:answers).find(params[:user_id])
-      tag_name = params[:tag_name]
-
-      posts = Post.search_by_user_and_tag("#{user.username} #{tag_name}")
-
+      user = User.find(params[:user_id])
+      tag = Tag.find_by(name: params[:tag_name])
+      posts = user.posts.filter { |post| post.tags.include?(tag) }
       if params[:sort].present?
         posts = sort_posts(posts, params[:sort])
       end
@@ -47,6 +45,16 @@ class UsersController < ApplicationController
     else
       render json: { error: "User ID and tag name are required" }, status: :bad_request
     end
+  end
+
+  def search_users
+    if params[:value].present?
+      @users = User.search_by_name(params[:value])
+    else
+      @users = User.all
+    end
+
+    index
   end
 
   private
