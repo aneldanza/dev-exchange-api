@@ -1,6 +1,6 @@
 # README
 
-This README documents the steps necessary to get the application up and running and provides API documentation for the available endpoints.
+DevExchange API is a powerful and secure Rails backend, backed by PostgreSQL, designed to fuel an engaging, Stack Overflow-inspired platform. With seamless Devise-JWT authentication powered by HTTP-only cookies, it ensures top-notch security for users. This API empowers frontend clients with rich features, including user profiles, dynamic question and answer interactions, versatile tagging, lively comment threads, and intuitive voting capabilities—all the essential tools to create a vibrant and collaborative Q&A community.
 
 ## Getting Started
 
