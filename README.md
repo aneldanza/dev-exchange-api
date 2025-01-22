@@ -16,16 +16,20 @@ This README documents the steps necessary to get the application up and running 
 
    ```sh
    git clone https://github.com/aneldanza/dev-exchange-api.git
-   cd your-project
+   cd dev-exchange-api
    ```
 
-2. Install dependencies:
+2. Set up database passwords:
+
+   Ensure you have your database passwords set up in your environment variables. Update `database.yml` file accordingly.
+
+3. Install dependencies:
 
    ```sh
    bundle install
    ```
 
-3. Set up the database:
+4. Set up the database:
 
    ```sh
    rails db:create
@@ -33,7 +37,7 @@ This README documents the steps necessary to get the application up and running 
    rails db:seed
    ```
 
-4. Start the Rails server:
+5. Start the Rails server:
    ```sh
    rails server
    ```
