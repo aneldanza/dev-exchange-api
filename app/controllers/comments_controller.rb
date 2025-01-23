@@ -1,5 +1,6 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: [:show, :update, :destroy]
+  before_action :authorize_user, only: [:create]
 
   def show
     render json: CommentSerializer.new(@comment).serializable_hash[:data][:attributes], status: :ok
