@@ -84,3 +84,4 @@ production:
   database: dev_exchange_api_production
   username: dev_exchange_api
   password: <%= ENV['DEV_EXCHANGE_API_DB_PASSWORD']%>
+  url: <%= ENV['DATABASE_URL'] %>
