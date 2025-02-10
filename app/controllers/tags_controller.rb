@@ -57,7 +57,7 @@ class TagsController < ApplicationController
   def sort_searched_tags(tags, sort)
     case sort
     when "popular"
-      tags.joins(:posts).group("tags.id, pg_search_978c2f8941354cf552831b.rank").order("COUNT(posts.id) DESC")
+      tags.left_joins(:posts).group("tags.id, pg_search_978c2f8941354cf552831b.rank").order("COUNT(posts.id) DESC")
     when "newest", "new"
       tags.reorder(created_at: :desc)
     when "oldest"
