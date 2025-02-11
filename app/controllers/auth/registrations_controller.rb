@@ -17,9 +17,16 @@ class Auth::RegistrationsController < Devise::RegistrationsController
     if resource.save
       if resource.active_for_authentication?
         sign_in(resource_name, resource) # Log in the user after registration
-        set_jwt_cookie(resource) # Set the JWT cookie after signing in
+
+        @token = request.env["warden-jwt_auth.token"]
+        headers["Authorization"] = @token
+
+        # pass token to frontend
         render json: {
-          data: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
+          data: {
+            user: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
+            token: @token,
+          },
           message: "Signed up and logged in successfully",
         }, status: :ok
       else
@@ -73,19 +80,4 @@ class Auth::RegistrationsController < Devise::RegistrationsController
   #   super(resource)
   # end
 
-  private
-
-  # def respond_with(resource, _opts = {})
-  #   if resource.persisted?
-  #     set_jwt_cookie(resource)
-  #     render json: {
-  #       status: { code: 200, message: "Signed up successfully" },
-  #       data: UserSerializer.new(resource).serializable_hash[:data][:attributes],
-  #     }
-  #   else
-  #     render json: {
-  #       status: { message: "User couldn't be created successfully #{resource.errors.full_messages.to_sentence}" },
-  #     }, status: :unprocessable_entity
-  #   end
-  # end
 end
