@@ -13,6 +13,5 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       headers: :any,
       methods: [:get, :post, :put, :patch, :delete, :options, :head],
       expose: ["access-token", "expiry", "token-type", "Authorization"]
-    # credentials: true # This is important to allow cookies
   end
 end
