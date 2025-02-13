@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Auth::SessionsController < Devise::SessionsController
-  include ActionController::Cookies
+  respond_to :json
 
   # before_action :configure_sign_in_params, only: [:create]
 
@@ -26,9 +26,6 @@ class Auth::SessionsController < Devise::SessionsController
     set_current_user
 
     if @current_user
-      cookies.delete(:jwt, secure: true, same_site: :none)
-      @current_user.revoke_token
-      Rails.logger.debug("*** current user is: #{@current_user.jti}")
       render json: {
         status: 200,
         message: "logged out successfully",
@@ -44,12 +41,16 @@ class Auth::SessionsController < Devise::SessionsController
   private
 
   def respond_with(current_user, _opts = {})
-    set_jwt_cookie(current_user)
-    Rails.logger.debug("is cookie set on cookies.signed[:jwt] - #{cookies.signed[:jwt].present?}")
+    @token = request.env["warden-jwt_auth.token"]
+    headers["Authorization"] = @token
+
     render json: {
 
       status: 200, message: "User logged in successfully",
-      data: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
+      data: {
+        user: UserSerializer.new(current_user).serializable_hash[:data][:attributes],
+        token: @token,
+      },
 
     }, status: :ok
   end

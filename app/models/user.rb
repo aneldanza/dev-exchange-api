@@ -29,19 +29,4 @@ class User < ApplicationRecord
                     tsearch: { prefix: true, any_word: true },
                     trigram: { threshold: 0.1 },
                   }
-
-  def generate_jwt
-    JWT.encode(
-      {
-        jti: self.jti,
-        sub: id,
-        exp: 30.minutes.from_now.to_i,
-      },
-      Rails.application.credentials.devise_jwt_secret_key!
-    )
-  end
-
-  def revoke_token
-    update!(jti: SecureRandom.uuid)
-  end
 end
