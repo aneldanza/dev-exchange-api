@@ -1,10 +1,8 @@
 class VotesController < ApplicationController
   before_action :authorize_user, only: [:cast_vote]
+  before_action :set_votable, only: [:cast_vote]
 
   def cast_vote
-    votable_name = params[:vote][:votable_type]
-    @votable = votable_name.constantize.find(params[:vote][:votable_id])
-
     if is_owner?
       render json: { errors: ["You can't vote for your own content"] }, status: :forbidden
       return
@@ -12,15 +10,15 @@ class VotesController < ApplicationController
 
     @vote = @votable.votes.find_or_initialize_by(user_id: current_user.id)
 
-    if @vote.value == params[:vote][:value].to_i
-      render json: { errors: ["You have already #{@vote.value === 1 ? "up" : "down"}voted this #{votable_name.downcase}"] }, status: :conflict
+    if @vote.value == vote_params[:value].to_i
+      render json: { errors: ["You have already #{@vote.value === 1 ? "up" : "down"}voted this #{vote_params[:votable_type]}"] }, status: :conflict
       return
     end
 
-    @vote.value = (@vote.value || 0) + params[:vote][:value].to_i
+    @vote.value = (@vote.value || 0) + vote_params[:value].to_i
 
     if @vote.save
-      render json: { message: "Vote successfully cast", vote: @vote }, status: :ok
+      render json: { message: "Your vote has been successfully cast.", vote: @vote }, status: :ok
     else
       render json: { errors: @vote.errors.full_messages }, status: :unprocessable_entity
     end
@@ -34,5 +32,9 @@ class VotesController < ApplicationController
 
   def is_owner?
     @votable.user == current_user
+  end
+
+  def set_votable
+    @votable = Post.find(vote_params[:votable_id])
   end
 end
