@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  before_action :authorize_user, only: [:update, :destroy]
+
   def index
     serialized_users = @users.map { |user| UserSerializer.new(user).serializable_hash[:data][:attributes] }
 
@@ -14,22 +16,20 @@ class UsersController < ApplicationController
 
   def update
     @user = User.includes(:tags, :questions).find(params[:id])
-    if current_user && current_user.id == @user.id
-      @user.update(user_params)
-      render json: FullUserSerializer.new(@user).serializable_hash[:data][:attributes], status: 200
-    else
-      render json: { error: "Unauthorized" }, status: :unauthorized
-    end
+
+    check_if_user_is_owner(@user.id)
+
+    @user.update(user_params)
+    render json: FullUserSerializer.new(@user).serializable_hash[:data][:attributes], status: 200
   end
 
   def destroy
     @user = User.find(params[:id])
-    if current_user && current_user.id == @user.id
-      @user.destroy
-      head :no_content
-    else
-      render json: { error: "Unauthorized" }, status: :unauthorized
-    end
+
+    check_if_user_is_owner(@user.id)
+
+    @user.destroy
+    head :no_content
   end
 
   def search_posts

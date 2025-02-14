@@ -1,6 +1,6 @@
 class CommentsController < ApplicationController
   before_action :set_comment, only: [:show, :update, :destroy]
-  before_action :authorize_user, only: [:create]
+  before_action :authorize_user, only: [:create, :update, :destroy]
   before_action :set_commentable, only: [:create]
 
   def show
@@ -17,10 +17,7 @@ class CommentsController < ApplicationController
   end
 
   def update
-    if !author?(@comment.user_id)
-      render json: { error: "Unauthorized" }, status: :unauthorized
-      return
-    end
+    check_if_user_is_owner(@comment.user_id)
 
     if @comment.update(comment_params)
       render json: CommentSerializer.new(@comment).serializable_hash[:data][:attributes], status: :ok
@@ -30,10 +27,7 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    if !author?(@comment.user_id)
-      render json: { error: "Unauthorized" }, status: :unauthorized
-      return
-    end
+    check_if_user_is_owner(@comment.user_id)
     @comment.destroy
   end
 
