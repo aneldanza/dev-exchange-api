@@ -5,18 +5,6 @@ class ApplicationController < ActionController::API
   before_action :skip_session_storage, if: :devise_controller?
   before_action :set_current_user
 
-  # def set_jwt_cookie(resource)
-  #   token = resource.generate_jwt
-  #   cookies.signed[:jwt] = {
-  #     value: token,
-  #     httponly: true,
-  #     # secure: Rails.env.production?, # Only send cookie over HTTPS in production
-  #     secure: true, # use true for same_site none cookie
-  #     expires: 30.minutes.from_now, # Match JWT expiration time
-  #     same_site: :none,
-  #   }
-  # end
-
   def set_current_user
     token = request.headers["Authorization"]&.split(" ")&.last
 
@@ -29,8 +17,12 @@ class ApplicationController < ActionController::API
 
         # Find the user based on the jti
         @current_user = User.find_by(id: id, jti: jti)
-      rescue
+      rescue JWT::ExpiredSignature
+        @token_expired = true
+        @current_user = nil
+      rescue => e
         Rails.logger.error "JWT decode error: #{e.message}"
+        @current_user = nil
       end
     else
       @current_user = nil
@@ -38,8 +30,17 @@ class ApplicationController < ActionController::API
   end
 
   def authorize_user
-    if !logged_in?
+    if @token_expired
+      render json: { error: "Token expired. Please log in again" }, status: :unauthorized
+    elsif !logged_in?
+      render json: { error: "Please, log in" }, status: :unauthorized
+    end
+  end
+
+  def check_if_user_is_owner(owner_id)
+    if !author?(owner_id)
       render json: { error: "Unauthorized" }, status: :unauthorized
+      return
     end
   end
 
@@ -118,5 +119,9 @@ class ApplicationController < ActionController::API
 
   def skip_session_storage
     request.session_options[:skip] = true
+  end
+
+  def handle_token_expired
+    render json: { error: "Token expired. Please log in again" }, status: :unauthorized
   end
 end

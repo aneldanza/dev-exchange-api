@@ -28,10 +28,7 @@ class AnswersController < ApplicationController
 
   # PATCH/PUT /answers/1
   def update
-    if !author?(@answer.user_id)
-      render json: { error: "Unauthorized" }, status: :unauthorized
-      return
-    end
+    check_if_user_is_owner(@answer.user_id)
     if @answer.update(answer_params)
       render json: AnswerSerializer.new(@answer).serializable_hash[:data][:attributes], status: :ok
     else
@@ -41,10 +38,7 @@ class AnswersController < ApplicationController
 
   # DELETE /answers/1
   def destroy
-    if !author?(@answer.user_id)
-      render json: { error: "Unauthorized" }, status: :unauthorized
-      return
-    end
+    check_if_user_is_owner(@answer.user_id)
     @answer.destroy
   end
 
