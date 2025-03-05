@@ -1,6 +1,6 @@
 # README
 
-DevExchange API is a powerful and secure Rails backend, backed by PostgreSQL, designed to fuel an engaging, Stack Overflow-inspired platform. With seamless Devise-JWT authentication powered by HTTP-only cookies, it ensures top-notch security for users. This API empowers frontend clients with rich features, including user profiles, dynamic question and answer interactions, versatile tagging, lively comment threads, and intuitive voting capabilities—all the essential tools to create a vibrant and collaborative Q&A community.
+DevExchange API is a powerful and secure Rails backend, backed by PostgreSQL, designed to fuel an engaging, Stack Overflow-inspired platform. With seamless Devise-JWT authentication. This API empowers frontend clients with rich features, including user profiles, dynamic question-and-answer interactions, versatile tagging, lively comment threads, and intuitive voting capabilities—all the essential tools to create a vibrant and collaborative Q&A community.
 
 ## Getting Started
 
@@ -46,12 +46,12 @@ DevExchange API is a powerful and secure Rails backend, backed by PostgreSQL, de
 
 ### Authentication
 
-#### JWT Token Authentication with HTTP-only Cookies using Devise and devise-jwt
+#### JWT Token Authentication Devise and devise-jwt
 
 This application uses `devise-jwt` for authentication, and the tokens are stored in HTTP-only cookies to enhance security.
 
 #### How It Works
 
-- **Login**: When a user logs in, the server generates a JWT token and sends it back to the client in an HTTP-only cookie.
-- **Authenticated Requests**: For subsequent requests, the client sends the HTTP-only cookie containing the JWT token. The server verifies the token to authenticate the user.
-- **Logout**: To log out, the client can clear the HTTP-only cookie.
+- **Login**: When a user logs in, the server generates a JWT token and sends it back to the client.
+- **Authenticated Requests**: The client includes a header containing the JWT token for subsequent requests. The server verifies the token to authenticate the user.
+- **Logout**: The client can clear the token from local-storage to log out.
