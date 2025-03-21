@@ -6,7 +6,7 @@ class TagSerializer
 
   attribute :questions do |object, params|
     if params && params[:detailed]
-      object.posts.map { |post| QuestionSerializer.new(post).serializable_hash[:data][:attributes] }
+      object.posts.map { |post| PostSerializer.new(post).serializable_hash[:data][:attributes] }
     else
       object.posts.map { |post| { id: post.id } }
     end
